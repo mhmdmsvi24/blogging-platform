@@ -1,3 +1,3 @@
 export const home_controller = (req, res) => {
-    res.render("index/index.html");
+    res.status(200).render("index/index.html");
 };
