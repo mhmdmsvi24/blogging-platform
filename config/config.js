@@ -14,8 +14,6 @@ import { Searchbar } from "../views/layouts/searchbar.js";
 // Express
 const app = express();
 app.use(express.static(path.join(__dirname, "..", "public")));
-app.locals.Button = Button;
-app.locals.Searchbar = Searchbar;
 
 // nunjucks config
 const NJK = nunjucks.configure(path.join(__dirname, "..", "views"), {
@@ -24,7 +22,13 @@ const NJK = nunjucks.configure(path.join(__dirname, "..", "views"), {
     watch: true,
 });
 
-NJK.addGlobal("button", Button)
-NJK.addGlobal("searchbar", Searchbar)
+// ui components
+const compoenents = { Button, Searchbar };
+
+// just import and add components to the components variable and it will be automatically added to globals
+for (const [name, component] of Object.entries(compoenents)) {
+    app.locals[name] = component;
+    NJK.addGlobal(name, component);
+}
 
 export { __filename, __dirname, app };
