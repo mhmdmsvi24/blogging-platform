@@ -9,10 +9,13 @@ const __dirname = path.dirname(__filename);
 
 // JS components
 import { Button } from "../views/layouts/button.js";
+import { Searchbar } from "../views/layouts/searchbar.js";
 
 // Express
 const app = express();
 app.use(express.static(path.join(__dirname, "..", "public")));
+app.locals.Button = Button;
+app.locals.Searchbar = Searchbar;
 
 // nunjucks config
 const NJK = nunjucks.configure(path.join(__dirname, "..", "views"), {
@@ -22,5 +25,6 @@ const NJK = nunjucks.configure(path.join(__dirname, "..", "views"), {
 });
 
 NJK.addGlobal("button", Button)
+NJK.addGlobal("searchbar", Searchbar)
 
 export { __filename, __dirname, app };

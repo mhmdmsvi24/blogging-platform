@@ -3,9 +3,11 @@
     Shopify Pricing - Setup and Open Your Online Store Tod...
 {% endblock %}
 {% block content %}
-    <div>
-        <div>
-            <p>Plans &amp; pricing</p>
+    <div class="container p-10">
+        {{ button({text: "Login"}) }}
+        {{ searchbar() }}
+        <!-- <div class="text-center font-bold mt-10">
+            <p class="uppercase">Plans &amp; pricing</p>
             <h1>
                 Start for free, then enjoy<br/>
                 1 &euro;/month for 3 months
@@ -15,12 +17,12 @@
 
         <div>
             <div>
-                {{ button({variant: "primary", text: "Login"}) }}
+                {{ button({text: "Login"}) }}
             </div>
         </div>
 
         <div>
             Try Shopify free, no credit card required. By entering your email,<br/> you agree to receive marketing emails from Shopify.
-        </div>
+        </div> -->
     </div>
 {% endblock %}
