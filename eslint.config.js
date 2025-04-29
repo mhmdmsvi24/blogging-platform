@@ -14,5 +14,8 @@ export default defineConfig([
             },
         },
         extends: ["js/recommended", prettier],
+        rules: {
+            "no-console": "warn"
+        }
     },
 ]);

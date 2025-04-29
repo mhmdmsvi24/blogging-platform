@@ -6,7 +6,6 @@ import { __dirname } from "../utils/utils.js";
 const tours = JSON.parse(readFileSync(path.join(__dirname, "data", "tours.json"), "utf-8"))
 
 export function getTours(req, res) {
-    console.log(req.requestTime)
     res.status(200).json({
         status: "success",
         results: tours.length,
