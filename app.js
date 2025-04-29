@@ -12,12 +12,12 @@ app
     .use(express.json())
     .use(express.static(path.join(__dirname, "public")))
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"));
 }
 
 // Routes
-app.use("/", home_controller);
+app.get("/", home_controller);
 app.use("/api/v1/tours", tourRouter);
 
 export default app;
