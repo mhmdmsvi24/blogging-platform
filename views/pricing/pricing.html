@@ -3,9 +3,19 @@
     Shopify Pricing - Setup and Open Your Online Store Tod...
 {% endblock %}
 {% block content %}
-    <div class="container p-10">
-        {{ Button({text: "Login"}) }}
-        {{ Searchbar() }}
+    <div class="container my-10 mx-auto">
+        <div class="flex justify-around items-stretch gap-1 p-2 flex-nowrap">
+            {% for card in cardData %}
+                <div class="grow max-w-[350px]">
+                    {{ PricingCards({ cardData: card }) }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- {{ Button({text: "Login"}) }}
+        {{ Searchbar() }} -->
+
+
         <!-- <div class="text-center font-bold mt-10">
             <p class="uppercase">Plans &amp; pricing</p>
             <h1>

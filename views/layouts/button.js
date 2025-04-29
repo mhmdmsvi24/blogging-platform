@@ -3,16 +3,18 @@ import { cn } from "../../utils/utils.js";
 import { cva } from "class-variance-authority";
 
 const buttonStyles = cva(
-    ["flex", "items-center", "justify-center", "transition-colors", "rounded-full", "cursor-pointer", "font-bold", "text-nowrap"],
+    ["flex", "items-center", "justify-center", "transition-colors", "rounded-full", "cursor-pointer", "font-bold",
+        "text-nowrap", "h-11", "w-36"],
     {
         variants: {
             variant: {
                 default: ["bg-black", "text-white"],
-                light: ["bg-white",]
+                light: ["bg-white"],
+                text: ["bg-white", "text-black", "text-center", "underline"]
             },
             size: {
-                button: ["h-10", "py-6", "px-6"],
-                icon: ["h-20", "p-2.5"],
+                button: [],
+                icon: ["p-2.5"],
                 full: ["w-full"]
             },
         },

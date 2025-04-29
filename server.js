@@ -1,23 +1,36 @@
+import path from "path";
 import dotenv from "dotenv";
+import nunjucks from "nunjucks";
 
-// eslint-disable-next-line no-unused-vars
-import { __dirname } from "./config/config.js";
-import { app } from "./config/config.js";
+import { __dirname } from "./utils/utils.js";
 
-import { home_controller } from "./controllers/home.controller.js";
-import { auth_controller } from "./controllers/auth.controller.js";
-import { pricing_controller } from "./controllers/pricing.controller.js";
+// JS components
+import { Button } from "./views/layouts/button.js";
+import { Searchbar } from "./views/layouts/searchbar.js";
+import { PricingCards } from "./views/layouts/pricing-cards.js";
 
-dotenv.config();
-// eslint-disable-next-line no-undef
-const PORT = process.env.PORT || 3000;
+import app from "./app.js";
 
-// Express
-app.use("/pricing", pricing_controller)
-app.use("/", home_controller);
-app.use("/auth", auth_controller);
+dotenv.config({ path: "./config.env" });
+ 
+const PORT = process.env.PORT || 8080;
 
+// nunjucks config
+const NJK = nunjucks.configure(path.join(__dirname, "views"), {
+    autoescape: true,
+    express: app,
+    watch: true,
+});
+
+// ui components
+const compoenents = { Button, Searchbar, PricingCards };
+
+// just import and add components to the components variable and it will be automatically added to globals
+for (const [name, component] of Object.entries(compoenents)) {
+    app.locals[name] = component;
+    NJK.addGlobal(name, component);
+}
 
 app.listen(PORT, "localhost", () =>
-    console.log(`Server has been started on port ${PORT}`)
+    console.log(`Success, Port: ${PORT}`)
 );
