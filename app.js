@@ -2,8 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import path from "path";
 import { __dirname } from "./utils/utils.js";
-import tourRouter from "./routes/tours.route.js";
-import { home_controller } from "./controllers/home.controller.js";
+import { postsRouter } from "./routes/posts.route.js";
 
 const app = express();
 
@@ -17,7 +16,6 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Routes
-app.get("/", home_controller);
-app.use("/api/v1/tours", tourRouter);
+app.use("/api/v1/posts", postsRouter)
 
 export default app;
