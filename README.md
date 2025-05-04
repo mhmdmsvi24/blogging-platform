@@ -1,45 +1,19 @@
-# Shopify Clone
-Fully SSR clone of Shopify with Node/Express
+NULL
 
-## Technologies
+200	    OK	                    ✅ Standard response for successful GET or PUT request
+201	    Created	                ✅ Resource successfully created (e.g., after POST)
+204	    No Content	            ✅ Success with no response body (e.g., after DELETE or successful update)
+400	    Bad Request	            ❌ Invalid data from client (e.g., missing fields, bad JSON)
+401	    Unauthorized	        ❌ User is not authenticated (e.g., missing/invalid token)
+403	    Forbidden	            ❌ Authenticated but not allowed to perform action
+404	    Not Found	            ❌ Resource not found (e.g., invalid ID or URL)
+409	    Conflict	            ❌ Duplicate resource, version conflict, etc.
+422	    Unprocessable Entity	❌ Semantically wrong input (e.g., failed validation, invalid format)
+500	    Internal Server Error	❌ Something broke on the server (use sparingly, with logs)
 
-1. Node/Express
-2. Nunjucks (Jinja 2): Templating
-3. Tailwindcss V4
-4. Prettier + Eslint: linting and formatting
-
-## Setup
-
-First of all fork the repo and then you need to do couple of instructions:
-
-1. Setting up Tailwind V4: download the TW
-[binaries](https://github.com/tailwindlabs/tailwindcss/releases/)
-
-    > [!Note]
-    > You need specific version of TW binaries that match your OS be aware of
-    > that if it dont works
-
-2. move TW binaries to root of the project
-3. `npm install`
-4. `npm run tailwindcss` for TW compiler
-5. `npm run nodemon` for node server
-
-## Project Structure
-
-```
-Shopify Clone
-├─ config                       // base configuration file
-├─ controllers                  // business logic for routes
-├─ data
-├─ middleware
-├─ public                       // public dir that will be served to browser
-├─ routes
-├─ server.js                    // root file
-├─ tailwindcss-linux-x64        // tw binary for TW compiler
-├─ utils                        // utility functions
-└─ views
-   ├─ auth                      // auth layout
-   ├─ base.html                 // root layout
-   ├─ index                     // home page
-   └─ layouts                   // reusable components
-```
+| Operation | Method    | Common Status Codes               |
+| --------- | --------- | --------------------------------- |
+| Create    | POST      | `201`, `400`, `422`               |
+| Read      | GET       | `200`, `404`                      |
+| Update    | PUT/PATCH | `200`, `204`, `400`, `404`, `422` |
+| Delete    | DELETE    | `204`, `200`, `404`               |
