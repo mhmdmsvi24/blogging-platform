@@ -7,15 +7,13 @@ import { postsRouter } from "./routes/posts.route.js";
 const app = express();
 
 // Middlewares
-app
-    .use(express.json())
-    .use(express.static(path.join(__dirname, "public")))
+app.use(express.json()).use(express.static(path.join(__dirname, "public")));
 
 if (process.env.NODE_ENV === "development") {
-    app.use(morgan("dev"));
+	app.use(morgan("dev"));
 }
 
 // Routes
-app.use("/api/v1/posts", postsRouter)
+app.use("/api/v1/posts", postsRouter);
 
 export default app;
