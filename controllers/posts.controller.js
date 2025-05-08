@@ -1,38 +1,68 @@
 import mongoose from "mongoose";
 import { PostModel } from "../models/posts.model.js";
 
+class PostsAPI {
+	constructor(reqQuery, DBQuery) {
+		this.reqQuery = reqQuery;
+		this.DBQuery = DBQuery;
+	}
+
+	filter() {
+		const queryObj = Object.assign({}, this.reqQuery);
+		const excludedFilters = ["page", "sort", "limit", "field"];
+
+		excludedFilters.forEach((el) => {
+			delete queryObj[el];
+		});
+
+		this.DBQuery = this.DBQuery.find(queryObj);
+		return this;
+	}
+
+	sort() {
+		if (this.reqQuery.sort) {
+			const sortby = this.reqQuery.sort.split(",").join(" ");
+			this.DBQuery = this.DBQuery.sort(sortby);
+		} else {
+			this.DBQuery = this.DBQuery.sort("-createdAt");
+		}
+
+		return this;
+	}
+
+	limitFields() {
+		if (this.reqQuery.fields) {
+			const fields = this.reqQuery.fields.split(",").join(" ");
+			this.DBQuery = this.DBQuery.select(fields);
+		} else {
+			this.DBQuery = this.DBQuery.select("-__v");
+		}
+
+		return this;
+	}
+
+	paginate() {
+		const page = this.reqQuery.page * 1 || 1;
+		const limit = this.reqQuery.limit * 1 || 100;
+		const skip = (page - 1) * limit;
+
+		this.DBQuery = this.DBQuery.skip(skip).limit(limit);
+
+		return this;
+	}
+}
+
 // TODO: posts related controllers probably need security patch, for sure!!!
 // FIXME: these controllers send error shit to the frontend fixit
 export async function getPosts(req, res) {
-	const queryObj = Object.assign({}, req.query);
-	const excludedFilters = ["page", "sort", "limit", "field"];
-
-	excludedFilters.forEach((el) => {
-		delete queryObj[el];
-	});
-
-	// defaults to latest posts
-	const sortQuery = req.query.sort || "-createdAt";
-
-	// pagination
-	const page = req.query.page;
-	const limit = req.query.limit || 32;
-	const skip = (page - 1) * limit;
-
 	try {
-		let posts = [];
+		const postsQuery = new PostsAPI(req.query, PostModel.find())
+			.filter()
+			.sort()
+			.limitFields()
+			.paginate();
 
-		posts = await PostModel.find({ ...queryObj, deleted: false })
-			.skip(skip)
-			.limit(limit)
-			.sort(sortQuery)
-			.lean();
-
-		if (page) {
-			const numPosts = await PostModel.countDocuments();
-
-			if (numPosts <= skip) throw new Error("This Page Does Not Exits");
-		}
+		const posts = await postsQuery.DBQuery.lean();
 
 		res.status(200).json({
 			status: "success",
@@ -81,7 +111,7 @@ export async function getSinglePost(req, res) {
 	}
 
 	try {
-		const post = await PostModel.findOne({ _id: id, deleted: false }).lean();
+		const post = await PostModel.findById(id).lean();
 
 		if (!post) {
 			return res.status(404).json({
@@ -99,8 +129,9 @@ export async function getSinglePost(req, res) {
 	} catch {
 		res.status(500).json({
 			status: "error",
-			message: "Something went wrong",
-			error: "something terribly went wrong!",
+			data: {
+				message: "Something terrilbly went wrong",
+			},
 		});
 	}
 }

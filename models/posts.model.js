@@ -35,4 +35,17 @@ const PostsSchema = new mongoose.Schema(
 	}
 );
 
+PostsSchema.pre(/^find/, function (next) {
+	this.find({ deleted: { $ne: true } });
+	this.start = Date.now();
+	next();
+});
+
+PostsSchema.post(/^find/, function (doc, next) {
+	// eslint-disable-next-line no-console
+	console.log("Query Took: ", Date.now() - this.start, "ms");
+	delete doc.start;
+	next();
+});
+
 export const PostModel = mongoose.model("Post", PostsSchema);
