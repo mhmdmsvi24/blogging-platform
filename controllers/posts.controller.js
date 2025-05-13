@@ -1,230 +1,180 @@
 import mongoose from "mongoose";
 import { PostModel } from "../models/posts.model.js";
-
-class PostsAPI {
-	constructor(reqQuery, DBQuery) {
-		this.reqQuery = reqQuery;
-		this.DBQuery = DBQuery;
-	}
-
-	filter() {
-		const queryObj = Object.assign({}, this.reqQuery);
-		const excludedFilters = ["page", "sort", "limit", "field"];
-
-		excludedFilters.forEach((el) => {
-			delete queryObj[el];
-		});
-
-		this.DBQuery = this.DBQuery.find(queryObj);
-		return this;
-	}
-
-	sort() {
-		if (this.reqQuery.sort) {
-			const sortby = this.reqQuery.sort.split(",").join(" ");
-			this.DBQuery = this.DBQuery.sort(sortby);
-		} else {
-			this.DBQuery = this.DBQuery.sort("-createdAt");
-		}
-
-		return this;
-	}
-
-	limitFields() {
-		if (this.reqQuery.fields) {
-			const fields = this.reqQuery.fields.split(",").join(" ");
-			this.DBQuery = this.DBQuery.select(fields);
-		} else {
-			this.DBQuery = this.DBQuery.select("-__v");
-		}
-
-		return this;
-	}
-
-	paginate() {
-		const page = this.reqQuery.page * 1 || 1;
-		const limit = this.reqQuery.limit * 1 || 100;
-		const skip = (page - 1) * limit;
-
-		this.DBQuery = this.DBQuery.skip(skip).limit(limit);
-
-		return this;
-	}
-}
+import { PostsAPI } from "../utils/postsAPIFeatures.js";
 
 // TODO: posts related controllers probably need security patch, for sure!!!
 // FIXME: these controllers send error shit to the frontend fixit
 export async function getPosts(req, res) {
-	try {
-		const postsQuery = new PostsAPI(req.query, PostModel.find())
-			.filter()
-			.sort()
-			.limitFields()
-			.paginate();
+    try {
+        const postsQuery = new PostsAPI(req.query, PostModel.find())
+            .filter()
+            .sort()
+            .limitFields()
+            .paginate();
 
-		const posts = await postsQuery.DBQuery.lean();
+        const posts = await postsQuery.DBQuery.lean();
 
-		res.status(200).json({
-			status: "success",
-			results: posts.length,
-			data: {
-				posts,
-			},
-		});
-	} catch (error) {
-		res.status(404).json({
-			status: "failed",
-			data: {
-				message: error,
-			},
-		});
-	}
+        res.status(200).json({
+            status: "success",
+            results: posts.length,
+            data: {
+                posts,
+            },
+        });
+    } catch (error) {
+        res.status(404).json({
+            status: "failed",
+            data: {
+                message: error,
+            },
+        });
+    }
 }
 
 export async function createPost(req, res) {
-	try {
-		const newPost = await PostModel.create(req.body);
+    try {
+        const newPost = await PostModel.create(req.body);
 
-		res.status(201).json({
-			status: "created",
-			data: {
-				createdPost: newPost,
-			},
-		});
-	} catch {
-		res.status(404).json({
-			status: "bad request",
-			message: "something terribly went wrong!",
-		});
-	}
+        res.status(201).json({
+            status: "created",
+            data: {
+                createdPost: newPost,
+            },
+        });
+    } catch {
+        res.status(404).json({
+            status: "bad request",
+            message: "something terribly went wrong!",
+        });
+    }
 }
 
 // /posts/:id
 export async function getSinglePost(req, res) {
-	const { id } = req.params;
+    const { id } = req.params;
 
-	if (!mongoose.Types.ObjectId.isValid(id)) {
-		return res.status(400).json({
-			status: "fail",
-			message: "Invalid post ID format",
-		});
-	}
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+            status: "fail",
+            message: "Invalid post ID format",
+        });
+    }
 
-	try {
-		const post = await PostModel.findById(id).lean();
+    try {
+        const post = await PostModel.findById(id).lean();
 
-		if (!post) {
-			return res.status(404).json({
-				status: "fail",
-				message: "Post not found",
-			});
-		}
+        if (!post) {
+            return res.status(404).json({
+                status: "fail",
+                message: "Post not found",
+            });
+        }
 
-		res.status(200).json({
-			status: "success",
-			data: {
-				post,
-			},
-		});
-	} catch {
-		res.status(500).json({
-			status: "error",
-			data: {
-				message: "Something terrilbly went wrong",
-			},
-		});
-	}
+        res.status(200).json({
+            status: "success",
+            data: {
+                post,
+            },
+        });
+    } catch {
+        res.status(500).json({
+            status: "error",
+            data: {
+                message: "Something terrilbly went wrong",
+            },
+        });
+    }
 }
 
 export async function patchPost(req, res) {
-	const { id } = req.params;
+    const { id } = req.params;
 
-	try {
-		const patchedPost = await PostModel.findByIdAndUpdate(id, req.body, {
-			runValidators: true,
-		}).lean();
+    try {
+        const patchedPost = await PostModel.findByIdAndUpdate(id, req.body, {
+            runValidators: true,
+        }).lean();
 
-		if (!patchedPost) {
-			res.status(404).json({
-				status: "fail",
-				message: "post not found",
-			});
-		}
+        if (!patchedPost) {
+            res.status(404).json({
+                status: "fail",
+                message: "post not found",
+            });
+        }
 
-		res.status(200).json({
-			status: "success",
-			data: {
-				post: patchedPost,
-			},
-		});
-	} catch {
-		res.status(422).json({
-			status: "invalid data or bad format",
-			data: {
-				message: "something terribly went wrong!",
-			},
-		});
-	}
+        res.status(200).json({
+            status: "success",
+            data: {
+                post: patchedPost,
+            },
+        });
+    } catch {
+        res.status(422).json({
+            status: "invalid data or bad format",
+            data: {
+                message: "something terribly went wrong!",
+            },
+        });
+    }
 }
 
 // only if all the fields are changed
 export async function updatePost(req, res) {
-	const { id } = req.params;
+    const { id } = req.params;
 
-	try {
-		// returns new post after a full update
-		const updatedPost = await PostModel.findByIdAndUpdate(id, req.body, {
-			new: true,
-			runValidators: true,
-		}).lean();
+    try {
+        // returns new post after a full update
+        const updatedPost = await PostModel.findByIdAndUpdate(id, req.body, {
+            new: true,
+            runValidators: true,
+        }).lean();
 
-		if (!updatedPost) {
-			res.status(404).json({
-				status: "fail",
-				message: "post not found",
-			});
-		}
+        if (!updatedPost) {
+            res.status(404).json({
+                status: "fail",
+                message: "post not found",
+            });
+        }
 
-		res.status(200).json({
-			status: "success",
-			data: {
-				post: updatedPost,
-			},
-		});
-	} catch {
-		res.status(422).json({
-			status: "invalid data or bad format",
-			data: {
-				message: "something terribly went wrong!",
-			},
-		});
-	}
+        res.status(200).json({
+            status: "success",
+            data: {
+                post: updatedPost,
+            },
+        });
+    } catch {
+        res.status(422).json({
+            status: "invalid data or bad format",
+            data: {
+                message: "something terribly went wrong!",
+            },
+        });
+    }
 }
 
 export async function deletePost(req, res) {
-	const { id } = req.params;
+    const { id } = req.params;
 
-	try {
-		const deletedPost = await PostModel.findOneAndUpdate(
-			{ _id: id, deleted: false },
-			{ deleted: true },
-			{ new: true }
-		).lean();
+    try {
+        const deletedPost = await PostModel.findOneAndUpdate(
+            { _id: id, deleted: false },
+            { deleted: true },
+            { new: true }
+        ).lean();
 
-		if (!deletedPost) {
-			res.status(404).json({
-				status: "fail",
-				message: "post not found",
-			});
-		}
+        if (!deletedPost) {
+            res.status(404).json({
+                status: "fail",
+                message: "post not found",
+            });
+        }
 
-		res.status(204).send();
-	} catch {
-		res.status(404).json({
-			status: "not found",
-			data: {
-				message: "something terribly went wrong!",
-			},
-		});
-	}
+        res.status(204).send();
+    } catch {
+        res.status(404).json({
+            status: "not found",
+            data: {
+                message: "something terribly went wrong!",
+            },
+        });
+    }
 }
