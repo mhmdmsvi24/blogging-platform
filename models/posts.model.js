@@ -4,7 +4,7 @@ const PostsSchema = new mongoose.Schema(
 	{
 		title: {
 			type: String,
-			require: [true, "post title is required"],
+			required: [true, "post title is required"],
 			trim: true,
 			unique: true,
 			maxLength: [50, "post title can not exceed 50 characters"],
@@ -12,13 +12,13 @@ const PostsSchema = new mongoose.Schema(
 		},
 		description: {
 			type: String,
-			require: [true, "post description is required"],
+			required: [true, "post description is required"],
 			trim: true,
 		},
 		content: {
 			type: String,
 			trim: true,
-			require: [true, "post must can not be without any contents"],
+			required: [true, "post must can not be without any contents"],
 			minLength: [50, "post content length must be minimum 50 characters"],
 		},
 		likes: {
