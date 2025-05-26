@@ -3,6 +3,7 @@ import morgan from "morgan";
 import path from "path";
 import { __dirname } from "./utils/utils.js";
 import { postsRouter } from "./routes/posts.route.js";
+import { userRouter } from "./routes/user.route.js";
 import { AppError } from "./utils/appError.js";
 import { errorController } from "./controllers/error.controller.js";
 
@@ -17,6 +18,7 @@ if (process.env.NODE_ENV === "development") {
 
 // Routes
 app.use("/api/v1/posts", postsRouter);
+app.use("/api/v1/users", userRouter);
 
 // For invalid routes
 app.all("/{*any}", (req, res, next) => {

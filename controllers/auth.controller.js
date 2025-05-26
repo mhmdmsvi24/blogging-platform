@@ -1,7 +1,8 @@
-import { UserModel } from "../models/users.model";
+import { UserModel } from "../models/users.model.js";
+import catchAsync from "../utils/catchAsync.js";
 
-export async function sighup(res) {
-	const newUser = UserModel.create(res.body);
+export const signup = catchAsync(async (req, res) => {
+	const newUser = await UserModel.create(req.body);
 
 	res.status(201).json({
 		status: "success",
@@ -9,4 +10,4 @@ export async function sighup(res) {
 			user: newUser,
 		},
 	});
-}
+});

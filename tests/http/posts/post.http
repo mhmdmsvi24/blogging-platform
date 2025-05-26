@@ -1,0 +1,8 @@
+POST http://localhost:8000/api/v1/posts
+Content-Type: application/json
+
+{
+    "title": "An introduction to Blockchain and Web3",
+    "description": "meow to web3",
+    "content": "Ex fugiat ut irure laboris eiusmod non consectetur aute amet tempor el"
+}
