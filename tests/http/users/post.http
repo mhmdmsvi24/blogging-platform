@@ -1,0 +1,11 @@
+@host=http://localhost:8000/api/v1
+
+POST /users/signup
+Content-Type: application/json
+
+{
+    "userName": "mhmdmsvi",
+    "email": "mousavimohammadg@gmail.com",
+    "password": "pass243060507550",
+    "confPassword": "pass243060507550"
+}
