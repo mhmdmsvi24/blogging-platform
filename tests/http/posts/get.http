@@ -1,0 +1,8 @@
+@host=http://localhost:8000/api/v1
+
+# all posts
+GET /posts
+
+# single post
+@id=6817603d467f66c2315888fd
+GET /posts/{{id}}

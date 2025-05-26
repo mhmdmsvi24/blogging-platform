@@ -1,19 +1,32 @@
 import dotenv from "dotenv";
-import mongoose from "mongoose";
-
-import app from "./app.js";
 dotenv.config({ path: "./config.env" });
+
+import mongoose from "mongoose";
+import app from "./app.js";
+
 const PORT = process.env.PORT || 8080;
 
-// Database
+process.on("uncaughtException", (err) => {
+	// eslint-disable-next-line no-console
+	console.log(err.name, err.message);
+});
+
 const DB = process.env.MONGODB_LOCAL;
+let server;
 mongoose.connect(DB).then(() => {
-    // eslint-disable-next-line no-console
-    console.log("---MongoDB database successfully connected---")
+	// eslint-disable-next-line no-console
+	console.log("---MongoDB OK---");
+	server = app.listen(PORT, "localhost", () =>
+		// eslint-disable-next-line no-console
+		console.log(`---Server OK, Port: ${PORT}---`)
+	);
+});
 
-    app.listen(PORT, "localhost", () =>
-        // eslint-disable-next-line no-console
-        console.log(`Success, Port: ${PORT}`)
-    );
-})
-
+// shutdown the app on critical errors
+process.on("unhandledRejection", (err) => {
+	// eslint-disable-next-line no-console
+	console.log(err.name, err.message);
+	server.close(() => {
+		process.exit(1);
+	});
+});

@@ -1,4 +1,5 @@
 # Tasks
+
 ## Project
 
 1. [x] basic setup
@@ -13,3 +14,8 @@
 1. [x] Git
 2. [x] Prettier/Eslint
 3. [ ] Husky setup
+
+## production
+
+1. [ ] setting up husky and lint-staged config for production
+2. [ ] dockerize
