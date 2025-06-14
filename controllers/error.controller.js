@@ -33,7 +33,7 @@ export function errorController(err, req, res) {
 	if (process.env.NODE_ENV == "development") {
 		sendErrorDev(err, res);
 	} else if (process.env.NODE_ENV == "production") {
-		// invalid types
+		// DB Errors
 		if (err.name === "CastError")
 			return new AppError(`Invalid ${err.path}: ${err.value}`, 400);
 		// duplicated types
@@ -48,6 +48,11 @@ export function errorController(err, req, res) {
 			return new AppError(`Invalid Input: ${errors.join(". ")}`, 400);
 		}
 
+		// JWT Toens error
+		if (err.name === "JsonWebTokenError")
+			return new AppError("Invalid sessoin, Please login", 401);
+		else if (err.name === "TokenExpiredError")
+			return new AppError("Your session has expired, please login", 401);
 		sendErrorProd(err, res);
 	}
 }

@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 8080;
 
 process.on("uncaughtException", (err) => {
 	// eslint-disable-next-line no-console
-	console.log(err.name, err.message);
+	console.log("uncaughtException:", err.name, err.message);
 });
 
 const DB = process.env.MONGODB_LOCAL;
@@ -25,7 +25,7 @@ mongoose.connect(DB).then(() => {
 // shutdown the app on critical errors
 process.on("unhandledRejection", (err) => {
 	// eslint-disable-next-line no-console
-	console.log(err.name, err.message);
+	console.log("unhandledRejection:", err.name, err.message);
 	server.close(() => {
 		process.exit(1);
 	});

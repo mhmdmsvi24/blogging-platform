@@ -1,11 +1,27 @@
-@host=http://localhost:8000/api/v1
+# @import ../global.http
+# @ref host
 
-POST /users/signup
+###
+
+POST {{host}}/users/signup
 Content-Type: application/json
 
 {
-    "userName": "mhmdmsvi",
-    "email": "mousavimohammadg@gmail.com",
-    "password": "pass243060507550",
-    "confPassword": "pass243060507550"
+    "userName": "mhmdmsvi2",
+    "email": "test2@gmail.com",
+    "password": "pass3430",
+    "confPassword": "pass3430"
+}
+
+{{
+    $global.token=response.parsedBody.token
+}}
+
+POST {{host}}/users/login
+Content-Type: application/json
+Authorization: Bearer {{$global.token}}
+
+{
+    "email": "test2@gmail.com",
+    "password": "pass3430"
 }
