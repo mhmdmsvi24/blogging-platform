@@ -7,14 +7,15 @@ import {
 	patchPost,
 	updatePost,
 } from "../controllers/posts.controller.js";
+import { protectRoute } from "../controllers/auth.controller.js";
 
 export const postsRouter = express.Router();
 
-postsRouter.route("/").get(getPosts).post(createPost);
+postsRouter.route("/").get(getPosts).post(protectRoute, createPost);
 
 postsRouter
 	.route("/:id")
 	.get(getSinglePost)
-	.patch(patchPost) // partial update
-	.put(updatePost) // fully update
-	.delete(deletePost);
+	.patch(protectRoute, patchPost) // partial update
+	.put(protectRoute, updatePost) // fully update
+	.delete(protectRoute, deletePost);
