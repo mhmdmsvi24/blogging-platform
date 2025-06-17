@@ -1,5 +1,5 @@
 # @import ../global.http
 # @ref host
 
-GET {{host}}/users
+GET {{host}}/user
 # Authorization: Bearer {{$global.token}}

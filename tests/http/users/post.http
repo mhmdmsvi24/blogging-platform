@@ -3,7 +3,7 @@
 
 ###
 
-POST {{host}}/users/signup
+POST {{host}}/user/signup
 Content-Type: application/json
 
 {
@@ -17,11 +17,25 @@ Content-Type: application/json
     $global.token=response.parsedBody.token
 }}
 
-POST {{host}}/users/login
+POST {{host}}/user/login
 Content-Type: application/json
 Authorization: Bearer {{$global.token}}
 
 {
     "email": "test2@gmail.com",
     "password": "pass3430"
+}
+
+POST {{host}}/user/forgotpass
+Content-Type: application/json
+
+{
+    "email": "test2@gmail.com"
+}
+
+PATCH {{host}}/user/resetpass/
+Content-Type: application/json
+
+{
+    "email": "test2@gmail.com"
 }

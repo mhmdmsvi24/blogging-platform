@@ -17,8 +17,8 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Routes
-app.use("/api/v1/posts", postsRouter);
-app.use("/api/v1/users", userRouter);
+app.use("/api/v1/post", postsRouter);
+app.use("/api/v1/user", userRouter);
 
 // For invalid routes
 app.all("/{*any}", (req, res, next) => {
