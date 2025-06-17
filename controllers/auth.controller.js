@@ -1,16 +1,12 @@
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
+import { promisify } from "util";
+
 import { UserModel } from "../models/users.model.js";
 import { AppError } from "../utils/appError.js";
 import catchAsync from "../utils/catchAsync.js";
-import jwt from "jsonwebtoken";
-import { promisify } from "util";
 import sendEmail from "../utils/mail.js";
-import crypto from "crypto";
-
-const signToken = (id) => {
-	return jwt.sign({ id: id }, process.env.JWT_SECRET, {
-		expiresIn: process.env.JWT_EXPIRE,
-	});
-};
+import { createAndSendToken } from "../utils/utils.js";
 
 export const signup = catchAsync(async (req, res, next) => {
 	const { userName, email, password, confPassword } = req.body;
@@ -25,15 +21,8 @@ export const signup = catchAsync(async (req, res, next) => {
 		password,
 		confPassword,
 	});
-	const token = signToken(newUser._id);
 
-	res.status(201).json({
-		status: "success",
-		token,
-		data: {
-			user: newUser,
-		},
-	});
+	createAndSendToken(newUser, 204, res);
 });
 
 export const login = catchAsync(async (req, res, next) => {
@@ -48,12 +37,7 @@ export const login = catchAsync(async (req, res, next) => {
 		return next(new AppError("Invalid Credentials"), 401);
 	}
 
-	const token = signToken(user._id);
-
-	res.status(200).json({
-		status: "success",
-		token,
-	});
+	createAndSendToken(user, 200, res);
 });
 
 // route protect middleware
@@ -168,10 +152,35 @@ export const resetPassword = catchAsync(async (req, res, next) => {
 	user.passwordResetExpire = undefined;
 	await user.save();
 
-	const token = signToken(user._id);
+	createAndSendToken(user, 201, res);
+});
 
-	res.status(200).json({
-		status: "success",
-		token,
-	});
+export const updatePassword = catchAsync(async (req, res, next) => {
+	const { token, password, newPassword, newPasswordConfirm } = req.body;
+	const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+	const userAccount = await UserModel.findById(decoded.id).select("+password");
+
+	if (!userAccount) {
+		return next(
+			new AppError(
+				"Please login before attempting to change your password",
+				401
+			)
+		);
+	}
+
+	if (!(await userAccount.correctPassword(password, userAccount.password))) {
+		return next(
+			new AppError(
+				"Invalid Password, Please make sure your previous password is correct",
+				403
+			)
+		);
+	}
+
+	userAccount.password = newPassword;
+	userAccount.confPassword = newPasswordConfirm;
+	await userAccount.save();
+
+	createAndSendToken(userAccount, 201, res);
 });

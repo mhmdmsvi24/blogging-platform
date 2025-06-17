@@ -12,6 +12,7 @@ import {
 	protectRoute,
 	resetPassword,
 	signup,
+	updatePassword,
 } from "../controllers/auth.controller.js";
 
 // auth controller and user controllers are separate
@@ -22,7 +23,9 @@ userRouter.post("/signup", signup);
 userRouter.post("/login", login);
 
 userRouter.post("/forgotpass", forgotPassword);
-userRouter.post("/resetpass/:token", resetPassword);
+userRouter.patch("/resetpass/:token", resetPassword);
+
+userRouter.patch("/updatepass", protectRoute, updatePassword);
 
 userRouter
 	.route("/")
