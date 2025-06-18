@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 const userSchema = new mongoose.Schema(
 	{
@@ -21,6 +22,15 @@ const userSchema = new mongoose.Schema(
 			unique: [true, "This account already exists"],
 			validate: [validator.isEmail, "Invalid email address"],
 		},
+		profile: {
+			type: String,
+		},
+		role: {
+			type: String,
+			enum: ["user", "mod", "admin"],
+			default: "user",
+			select: false,
+		},
 		password: {
 			type: String,
 			required: [true, "Password is required"],
@@ -37,16 +47,9 @@ const userSchema = new mongoose.Schema(
 				message: "Passwords do not match",
 			},
 		},
-		profile: {
-			type: String,
-		},
-		role: {
-			type: String,
-			enum: ["user", "mod", "admin"],
-			default: "user",
-			select: false,
-		},
 		passwordChangedAt: Date,
+		passwordResetToken: String,
+		passwordResetExpire: Date,
 	},
 	{
 		timestamps: true,
@@ -59,6 +62,13 @@ userSchema.pre("save", async function (next) {
 
 	this.password = await bcrypt.hash(this.password, 12);
 	this.confPassword = undefined;
+	next();
+});
+
+userSchema.pre("save", async function (next) {
+	if (!this.isModified("password") || this.isNew) return next();
+
+	this.passwordChangedAt = Date.now() - 1000;
 	next();
 });
 
@@ -81,6 +91,18 @@ userSchema.methods.changedPassword = async function (JWTTimeStamp) {
 
 	// Not changed
 	return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+	const resetToken = crypto.randomBytes(32).toString("hex");
+	this.passwordResetToken = crypto
+		.createHash("sha256")
+		.update(resetToken)
+		.digest("hex");
+
+	// valid for 30 minutes
+	this.passwordResetExpire = Date.now() + 30 * 60 * 1000;
+	return resetToken;
 };
 
 export const UserModel = mongoose.model("User", userSchema);
